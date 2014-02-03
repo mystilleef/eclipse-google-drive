@@ -22,6 +22,7 @@ public final class EventTester extends EventBusInstance {
 		final List<String> projectNames = new ArrayList<>();
 		projectNames.add("XMLExamples");
 		projectNames.add("drive-cmdline-sample");
+		projectNames.add("com.laboki.eclipse.plugin.responsiveness");
 		this.getEventBus().post(new ScanProjectsForResourcesEvent(projectNames));
 		// this.getEventBus().post(new ScanProjectsForResourcesEvent(null));
 		// this.getEventBus().post(new ScanProjectsForResourcesEvent(new ArrayList<String>()));
