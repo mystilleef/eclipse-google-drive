@@ -1,5 +1,9 @@
 package com.laboki.eclipse.plugin.googledrive.main;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -148,5 +152,25 @@ public enum EditorContext {
 		final MessageConsole myConsole = new MessageConsole(name, null);
 		ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[] { myConsole });
 		return myConsole;
+	}
+
+	public static void emptyFile(final String filePath) {
+		final File f = new File(filePath);
+		if (f.exists()) return;
+		EditorContext.createEmptyFile(f);
+	}
+
+	private static void createEmptyFile(final File f) {
+		try {
+			EditorContext.tryToCreateEmptyFile(f);
+		} catch (final IOException e) {
+			EditorContext.LOGGER.log(Level.WARNING, e.getMessage(), e);
+		}
+	}
+
+	private static void tryToCreateEmptyFile(final File f) throws IOException {
+		final BufferedWriter out = new BufferedWriter(new FileWriter(f));
+		out.write("");
+		out.close();
 	}
 }
