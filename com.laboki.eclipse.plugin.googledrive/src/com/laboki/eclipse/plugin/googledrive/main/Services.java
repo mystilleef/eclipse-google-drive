@@ -21,6 +21,7 @@ public final class Services implements Instance {
 		this.startService(new ResourcesScanner(this.eventBus));
 		this.startService(new AuthorizationBrower(this.eventBus));
 		this.startService(new GoogleAuthorization(this.eventBus));
+		this.startService(new ProjectNamesSerializer(this.eventBus));
 		this.startService(new EventTester(this.eventBus));
 	}
 
