@@ -21,10 +21,9 @@ import com.laboki.eclipse.plugin.googledrive.events.ScanProjectsForResourcesEven
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
-public final class ResourcesScanner extends EventBusInstance implements IResourceVisitor {
+public final class ResourcesScanner extends EventBusInstance {
 
 	private static final Logger LOGGER = Logger.getLogger(ResourcesScanner.class.getName());
-	private final List<IResource> resources = Lists.newArrayList();
 
 	public ResourcesScanner(final EventBus eventBus) {
 		super(eventBus);
@@ -42,13 +41,19 @@ public final class ResourcesScanner extends EventBusInstance implements IResourc
 
 			@Override
 			public void execute() {
-				ResourcesScanner.this.scanProjectsForResources(this.getProjects(projectNames));
-				this.emitScannedResourcesEvent();
-				ResourcesScanner.this.resources.clear();
+				this.emitScannedResourcesEvent(this.scanProjectsForResources(projectNames));
+			}
+
+			private void emitScannedResourcesEvent(final List<IResource> resources) {
+				ResourcesScanner.this.getEventBus().post(new EclipseGoogleDriveResourcesEvent(ImmutableList.copyOf(resources)));
+			}
+
+			private List<IResource> scanProjectsForResources(final List<String> projectNames) {
+				return new Scanner(this.getProjects(projectNames)).getResources();
 			}
 
 			private List<IProject> getProjects(final List<String> projectNames) {
-				final ArrayList<IProject> projects = new ArrayList<>();
+				final ArrayList<IProject> projects = Lists.newArrayList();
 				for (final String name : projectNames)
 					projects.add(this.getProject(name));
 				return projects;
@@ -57,29 +62,40 @@ public final class ResourcesScanner extends EventBusInstance implements IResourc
 			private IProject getProject(final String projectName) {
 				return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			}
-
-			private void emitScannedResourcesEvent() {
-				ResourcesScanner.this.getEventBus().post(new EclipseGoogleDriveResourcesEvent(ImmutableList.copyOf(ResourcesScanner.this.resources)));
-			}
 		}.begin();
 	}
 
-	private void scanProjectsForResources(final List<IProject> projects) {
-		for (final IProject project : projects)
-			ResourcesScanner.this.scan(project);
-	}
+	private final class Scanner implements IResourceVisitor {
 
-	private void scan(final IProject project) {
-		try {
-			project.accept(this);
-		} catch (final CoreException e) {
-			ResourcesScanner.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		private final List<IResource> resources = Lists.newArrayList();
+		private final List<IProject> projects;
+
+		public Scanner(final List<IProject> projects) {
+			this.projects = projects;
 		}
-	}
 
-	@Override
-	public boolean visit(final IResource resource) throws CoreException {
-		this.resources.add(resource);
-		return true;
+		private void scanProjectsForResources() {
+			for (final IProject project : this.projects)
+				this.scan(project);
+		}
+
+		private void scan(final IProject project) {
+			try {
+				project.accept(this);
+			} catch (final CoreException e) {
+				ResourcesScanner.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+		}
+
+		@Override
+		public boolean visit(final IResource resource) throws CoreException {
+			this.resources.add(resource);
+			return true;
+		}
+
+		public List<IResource> getResources() {
+			this.scanProjectsForResources();
+			return this.resources;
+		}
 	}
 }
