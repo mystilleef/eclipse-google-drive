@@ -47,7 +47,7 @@ public enum EditorContext {
 		try {
 			EditorContext.tryToFlushEvent();
 		} catch (final Exception e) {
-			EditorContext.LOGGER.log(Level.WARNING, e.getMessage());
+			EditorContext.LOGGER.log(Level.FINEST, e.getMessage(), e);
 		}
 	}
 
