@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.EclipseGoogleDriveResourcesEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ScanProjectsForResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
@@ -31,7 +32,14 @@ public final class ResourcesScanner extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
-	public void scanProjectsForResourcesHandler(final ScanProjectsForResourcesEvent event) {
+	public void eventHandler(final ScanProjectsForResourcesEvent event) {
+		Preconditions.checkNotNull(event.getProjectNames(), "ERROR: List of project names expected, not NULL");
+		this.startScanTask(event.getProjectNames());
+	}
+
+	@Subscribe
+	@AllowConcurrentEvents
+	public void eventHandler(final ProjectNamesEvent event) {
 		Preconditions.checkNotNull(event.getProjectNames(), "ERROR: List of project names expected, not NULL");
 		this.startScanTask(event.getProjectNames());
 	}
