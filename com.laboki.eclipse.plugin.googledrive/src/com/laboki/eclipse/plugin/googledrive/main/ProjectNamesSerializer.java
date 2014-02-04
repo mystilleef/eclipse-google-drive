@@ -8,24 +8,18 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.DeserializedProjectNamesEvent;
-import com.laboki.eclipse.plugin.googledrive.events.SerializeProjectNamesEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class ProjectNamesSerializer extends EventBusInstance {
 
-	public static final String SERIALIZABLE_FILE_PATH = Serializer.getSerializableFilePath("project.names.ser");
+	public static final String SERIALIZABLE_FILE_PATH = Serializer.getSerializableFilePath("eclipse.google.drive.project.names.ser");
 
 	public ProjectNamesSerializer(final EventBus eventBus) {
 		super(eventBus);
 		EditorContext.emptyFile(ProjectNamesSerializer.SERIALIZABLE_FILE_PATH);
-	}
-
-	@Override
-	public Instance end() {
-		this.emitDeserializedProjectNamesEvent();
-		return super.end();
 	}
 
 	@Override
@@ -47,7 +41,7 @@ public final class ProjectNamesSerializer extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
-	public static synchronized void serializeProjectNamesEventHandler(final SerializeProjectNamesEvent event) {
+	public static synchronized void serializeProjectNamesEventHandler(final ProjectNamesEvent event) {
 		new Task() {
 
 			@Override
