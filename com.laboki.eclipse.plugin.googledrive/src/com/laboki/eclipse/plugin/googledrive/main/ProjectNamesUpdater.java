@@ -40,6 +40,7 @@ public final class ProjectNamesUpdater extends EventBusInstance {
 	}
 
 	private synchronized void addUpdate(final ImmutableList<String> names) {
+		this.projectNames.removeAll(names);
 		this.projectNames.addAll(names);
 	}
 
@@ -52,6 +53,7 @@ public final class ProjectNamesUpdater extends EventBusInstance {
 
 	private synchronized void removeUpdate(final ImmutableList<String> names) {
 		this.projectNames.removeAll(names);
+		EditorContext.out(this.projectNames);
 	}
 
 	private synchronized void emitProjectNamesEvent() {
