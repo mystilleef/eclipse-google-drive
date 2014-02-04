@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import com.laboki.eclipse.plugin.googledrive.events.EclipseGoogleDriveResourcesEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ScannedResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ScanProjectsForResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
@@ -53,7 +53,7 @@ public final class ResourcesScanner extends EventBusInstance {
 			}
 
 			private void emitScannedResourcesEvent(final List<IResource> resources) {
-				ResourcesScanner.this.getEventBus().post(new EclipseGoogleDriveResourcesEvent(ImmutableList.copyOf(resources)));
+				ResourcesScanner.this.getEventBus().post(new ScannedResourcesEvent(ImmutableList.copyOf(resources)));
 			}
 
 			private List<IResource> scanProjectsForResources(final List<String> projectNames) {

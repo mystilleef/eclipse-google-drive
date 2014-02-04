@@ -4,11 +4,11 @@ import org.eclipse.core.resources.IResource;
 
 import com.google.common.collect.ImmutableList;
 
-public final class EclipseGoogleDriveResourcesEvent {
+public final class ScannedResourcesEvent {
 
 	private final ImmutableList<IResource> resources;
 
-	public EclipseGoogleDriveResourcesEvent(final ImmutableList<IResource> resources) {
+	public ScannedResourcesEvent(final ImmutableList<IResource> resources) {
 		this.resources = resources;
 	}
 
