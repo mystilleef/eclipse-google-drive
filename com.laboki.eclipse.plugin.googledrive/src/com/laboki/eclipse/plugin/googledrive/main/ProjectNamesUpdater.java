@@ -36,7 +36,7 @@ public final class ProjectNamesUpdater extends EventBusInstance {
 	@AllowConcurrentEvents
 	public void eventHandler(final UserSelectedProjectNamesEvent event) {
 		this.addUpdate(event.getProjectNames());
-		this.emitSerializeEvent();
+		this.emitProjectNamesEvent();
 	}
 
 	private synchronized void addUpdate(final ImmutableList<String> names) {
@@ -47,14 +47,14 @@ public final class ProjectNamesUpdater extends EventBusInstance {
 	@AllowConcurrentEvents
 	public void eventHandler(final UserDeSelectedProjectNamesEvent event) {
 		this.removeUpdate(event.getProjectNames());
-		this.emitSerializeEvent();
+		this.emitProjectNamesEvent();
 	}
 
 	private synchronized void removeUpdate(final ImmutableList<String> names) {
 		this.projectNames.removeAll(names);
 	}
 
-	private synchronized void emitSerializeEvent() {
+	private synchronized void emitProjectNamesEvent() {
 		this.getEventBus().post(new ProjectNamesEvent(this.getProjectNames()));
 		this.printProjectNames();
 	}
