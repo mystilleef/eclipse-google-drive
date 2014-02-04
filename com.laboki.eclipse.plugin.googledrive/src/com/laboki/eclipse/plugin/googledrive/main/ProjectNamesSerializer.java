@@ -41,7 +41,7 @@ public final class ProjectNamesSerializer extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
-	public static synchronized void serializeProjectNamesEventHandler(final ProjectNamesEvent event) {
+	public static synchronized void eventHandler(final ProjectNamesEvent event) {
 		new Task() {
 
 			@Override
