@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
@@ -84,15 +83,6 @@ public enum EditorContext {
 
 	public static IPartService getPartService() {
 		return (IPartService) EditorContext.WORKBENCH.getActiveWorkbenchWindow().getService(IPartService.class);
-	}
-
-	public static boolean isValidPart(final IWorkbenchPart part) {
-		if (part instanceof IEditorPart) return true;
-		return false;
-	}
-
-	public static boolean isInvalidPart(final IWorkbenchPart part) {
-		return !EditorContext.isValidPart(part);
 	}
 
 	public static Control getControl(final IEditorPart editor) {
