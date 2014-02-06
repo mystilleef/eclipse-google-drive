@@ -22,13 +22,13 @@ public final class Services implements Instance {
 
 	private void startServices() {
 		this.startService(new ProjectSelectionDialog(this.eventBus));
-		this.startService(new AuthorizationBrower(this.eventBus));
-		this.startService(new GoogleAuthorization(this.eventBus));
 		this.startService(new ResourcesUpdater(this.eventBus));
 		this.startService(new ResourcesScanner(this.eventBus));
 		this.startService(new ProjectNamesUpdater(this.eventBus));
 		this.startService(new ProjectNamesSerializer(this.eventBus));
 		this.startService(new ResourcesMonitor(this.eventBus));
+		this.startService(new AuthorizationBrower(this.eventBus));
+		this.startService(new GoogleAuthorization(this.eventBus));
 	}
 
 	private void startService(final Instance instance) {
