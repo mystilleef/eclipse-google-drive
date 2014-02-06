@@ -30,13 +30,13 @@ public final class GoogleAuthorization extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
-	public void googleAuthorizationCodeEventHandler(final GoogleAuthorizationCodeEvent event) {
+	public static void googleAuthorizationCodeEventHandler(final GoogleAuthorizationCodeEvent event) {
 		new Task() {
 
 			@Override
 			protected void execute() {
 				GoogleAuthorization.createAuthorizationCredential(event.getCode(), event.getFlow());
-				GoogleAuthorization.this.initAuthorizationCredential(event.getFlow());
+				GoogleAuthorization.initAuthorizationCredential(event.getFlow());
 			}
 		}.begin();
 	}
@@ -52,33 +52,33 @@ public final class GoogleAuthorization extends EventBusInstance {
 	@Override
 	public Instance begin() {
 		try {
-			this.initAuthorizationCredential(GoogleAuthorization.createAuthorizationCodeFlow());
+			GoogleAuthorization.initAuthorizationCredential(GoogleAuthorization.createAuthorizationCodeFlow());
 		} catch (final IOException e) {
 			GoogleAuthorization.LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return super.begin();
 	}
 
-	private void initAuthorizationCredential(final GoogleAuthorizationCodeFlow flow) {
+	private static void initAuthorizationCredential(final GoogleAuthorizationCodeFlow flow) {
 		try {
-			this.checkCredential(flow);
+			GoogleAuthorization.checkCredential(flow);
 		} catch (final IOException e) {
 			GoogleAuthorization.LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
-	private void checkCredential(final GoogleAuthorizationCodeFlow flow) throws IOException {
+	private static void checkCredential(final GoogleAuthorizationCodeFlow flow) throws IOException {
 		final Credential credential = flow.loadCredential(flow.getClientId());
-		if (credential != null) this.emitAuhorizationCredential(credential);
-		else this.requestUserAuthorization(flow);
+		if (credential != null) GoogleAuthorization.emitAuhorizationCredential(credential);
+		else GoogleAuthorization.requestUserAuthorization(flow);
 	}
 
-	private void emitAuhorizationCredential(final Credential credential) {
-		this.getEventBus().post(new GoogleAuthorizationCredentialEvent(credential));
+	private static void emitAuhorizationCredential(final Credential credential) {
+		EventBus.post(new GoogleAuthorizationCredentialEvent(credential));
 	}
 
-	private void requestUserAuthorization(final GoogleAuthorizationCodeFlow flow) {
-		this.getEventBus().post(new ShowAuthorizationBrowserEvent(flow));
+	private static void requestUserAuthorization(final GoogleAuthorizationCodeFlow flow) {
+		EventBus.post(new ShowAuthorizationBrowserEvent(flow));
 	}
 
 	private static GoogleAuthorizationCodeFlow createAuthorizationCodeFlow() throws IOException {
