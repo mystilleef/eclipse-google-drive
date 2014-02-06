@@ -4,11 +4,11 @@ import org.eclipse.core.resources.IResource;
 
 import com.google.common.collect.ImmutableList;
 
-public final class UpdatedProjectResourcesEvent {
+public final class ProjectResourcesEvent {
 
 	private final ImmutableList<IResource> resources;
 
-	public UpdatedProjectResourcesEvent(final ImmutableList<IResource> resources) {
+	public ProjectResourcesEvent(final ImmutableList<IResource> resources) {
 		this.resources = resources;
 	}
 
