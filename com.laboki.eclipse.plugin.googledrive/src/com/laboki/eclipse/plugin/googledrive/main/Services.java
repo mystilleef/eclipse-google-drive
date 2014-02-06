@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
+import com.laboki.eclipse.plugin.googledrive.ui.ProjectSelectionDialog;
 
 public final class Services implements Instance {
 
@@ -18,12 +19,14 @@ public final class Services implements Instance {
 	}
 
 	private void startServices() {
+		this.startService(new ProjectSelectionDialog(this.eventBus));
 		this.startService(new AuthorizationBrower(this.eventBus));
 		this.startService(new GoogleAuthorization(this.eventBus));
-		this.startService(new EventTester(this.eventBus));
+		this.startService(new ResourcesUpdater(this.eventBus));
 		this.startService(new ResourcesScanner(this.eventBus));
 		this.startService(new ProjectNamesUpdater(this.eventBus));
 		this.startService(new ProjectNamesSerializer(this.eventBus));
+		this.startService(new ResourcesMonitor(this.eventBus));
 	}
 
 	private void startService(final Instance instance) {
