@@ -27,6 +27,9 @@ public final class Services implements Instance {
 
 	private void startServices() {
 		this.startService(new ProjectSelectionDialog(this.eventBus));
+		this.startService(new DriveIdResourceMapperUpdater(this.eventBus));
+		this.startService(new DriveIdMapUpdater(this.eventBus));
+		this.startService(new DriveIdMapUpdaterSerializer(this.eventBus));
 		this.startService(new ResourcesUpdater(this.eventBus));
 		this.startService(new ResourcesScanner(this.eventBus));
 		this.startService(new ProjectNamesUpdater(this.eventBus));
