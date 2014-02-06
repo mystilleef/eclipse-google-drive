@@ -8,10 +8,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.laboki.eclipse.plugin.googledrive.events.ProjectResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceAddedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceRemovedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ScannedResourcesEvent;
-import com.laboki.eclipse.plugin.googledrive.events.UpdatedProjectResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserDeSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.main.EditorContext;
@@ -57,10 +57,11 @@ public final class ResourcesUpdater extends EventBusInstance {
 	}
 
 	private void emitUpdatedProjectResources() {
-		EventBus.post(new UpdatedProjectResourcesEvent(this.getResources()));
-		this.printResources();
+		EventBus.post(new ProjectResourcesEvent(this.getResources()));
+		// this.printResources();
 	}
 
+	@SuppressWarnings("unused")
 	private void printResources() {
 		for (final IResource resource : this.getResources())
 			EditorContext.out(resource);
