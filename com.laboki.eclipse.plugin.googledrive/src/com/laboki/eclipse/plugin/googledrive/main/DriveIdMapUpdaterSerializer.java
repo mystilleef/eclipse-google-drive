@@ -6,6 +6,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.laboki.eclipse.plugin.googledrive.events.DeserializedDriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
@@ -27,7 +28,7 @@ public final class DriveIdMapUpdaterSerializer extends EventBusInstance {
 	}
 
 	private static void emitDeserializedDriveIdMapEvent() {
-		EventBus.post(new DeserializedDriveidMapEvent(DriveIdMapUpdaterSerializer.deserialize()));
+		EventBus.post(new DeserializedDriveIdMapEvent(DriveIdMapUpdaterSerializer.deserialize()));
 	}
 
 	@SuppressWarnings("unchecked")

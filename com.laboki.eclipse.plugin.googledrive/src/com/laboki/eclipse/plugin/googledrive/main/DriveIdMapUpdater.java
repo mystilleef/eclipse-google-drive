@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.laboki.eclipse.plugin.googledrive.events.DeserializedDriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ProjectResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
@@ -25,7 +26,7 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
-	public void eventHandler(final DeserializedDriveidMapEvent event) {
+	public void eventHandler(final DeserializedDriveIdMapEvent event) {
 		this.refreshUpdate(event.getDriveIdMap());
 		this.emitDriveIdMapEvent();
 	}
