@@ -4,4 +4,28 @@
 	<extension point="org.eclipse.ui.startup">
 		<startup class="com.laboki.eclipse.plugin.googledrive.Startup" />
 	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+			<category
+				id="com.laboki.eclipse.plugin.googledrive.commands.category"
+				name="Eclipse Google Drive"
+				description="Shows a dialog to select projects to sync to Google Drive">
+			</category>
+			<command
+				categoryId="com.laboki.eclipse.plugin.googledrive.commands.category"
+				id="com.laboki.eclipse.plugin.googledrive.command.googledrive"
+				defaultHandler="com.laboki.eclipse.plugin.googledrive.Handler"
+				description="Shows a dialog to select projects to sync to Google Drive."
+				name="Eclipse Google Drive">
+			</command>
+	</extension>
+	<extension
+		point="org.eclipse.ui.bindings">
+			<key
+				sequence="ALT+."
+				commandId="com.laboki.eclipse.plugin.googledrive.command.googledrive"
+				contextId="org.eclipse.ui.contexts.window"
+				schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+			</key>
+	</extension>
 </plugin>
