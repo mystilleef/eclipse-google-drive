@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.laboki.eclipse.plugin.googledrive.authorization.AuthorizationBrower;
+import com.laboki.eclipse.plugin.googledrive.authorization.GoogleAuthorization;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
 import com.laboki.eclipse.plugin.googledrive.ui.ProjectSelectionDialog;
 

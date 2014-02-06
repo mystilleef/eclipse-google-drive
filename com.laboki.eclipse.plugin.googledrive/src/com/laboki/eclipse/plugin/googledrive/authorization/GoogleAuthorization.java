@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.authorization;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -17,6 +17,7 @@ import com.laboki.eclipse.plugin.googledrive.events.GoogleAuthorizationCredentia
 import com.laboki.eclipse.plugin.googledrive.events.ShowAuthorizationBrowserEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class GoogleAuthorization extends EventBusInstance {

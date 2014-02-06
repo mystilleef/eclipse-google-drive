@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.authorization;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.laboki.eclipse.plugin.googledrive.Activator;
+import com.laboki.eclipse.plugin.googledrive.main.EditorContext;
 
 public enum GoogleAuthorizationContext {
 	INSTANCE;

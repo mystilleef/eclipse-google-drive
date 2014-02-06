@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.authorization;
 
 import java.util.logging.Logger;
 
@@ -16,6 +16,8 @@ import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.GoogleAuthorizationCodeEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ShowAuthorizationBrowserEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
+import com.laboki.eclipse.plugin.googledrive.main.EditorContext;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 import com.laboki.eclipse.plugin.googledrive.task.AsyncTask;
 
 public final class AuthorizationBrower extends EventBusInstance {
