@@ -11,6 +11,7 @@ import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceAddedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceRemovedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ScannedResourcesEvent;
+import com.laboki.eclipse.plugin.googledrive.events.UpdatedProjectResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserDeSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 

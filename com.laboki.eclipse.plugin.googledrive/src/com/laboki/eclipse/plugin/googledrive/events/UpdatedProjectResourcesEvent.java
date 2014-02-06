@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.events;
 
 import org.eclipse.core.resources.IResource;
 
