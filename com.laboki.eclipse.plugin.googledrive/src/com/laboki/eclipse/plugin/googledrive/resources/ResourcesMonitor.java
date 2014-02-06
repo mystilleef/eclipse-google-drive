@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.resources;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +17,7 @@ import com.laboki.eclipse.plugin.googledrive.events.ResourceChangedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceRemovedEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 
 public final class ResourcesMonitor extends EventBusInstance implements IResourceChangeListener {
 

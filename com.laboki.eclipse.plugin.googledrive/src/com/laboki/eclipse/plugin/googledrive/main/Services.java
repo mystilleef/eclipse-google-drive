@@ -7,6 +7,11 @@ import com.google.common.collect.Lists;
 import com.laboki.eclipse.plugin.googledrive.authorization.AuthorizationBrower;
 import com.laboki.eclipse.plugin.googledrive.authorization.GoogleAuthorization;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
+import com.laboki.eclipse.plugin.googledrive.resources.ProjectNamesSerializer;
+import com.laboki.eclipse.plugin.googledrive.resources.ProjectNamesUpdater;
+import com.laboki.eclipse.plugin.googledrive.resources.ResourcesMonitor;
+import com.laboki.eclipse.plugin.googledrive.resources.ResourcesScanner;
+import com.laboki.eclipse.plugin.googledrive.resources.ResourcesUpdater;
 import com.laboki.eclipse.plugin.googledrive.ui.ProjectSelectionDialog;
 
 public final class Services implements Instance {

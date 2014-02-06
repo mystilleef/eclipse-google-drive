@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.resources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import com.laboki.eclipse.plugin.googledrive.events.ScannedResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ScanProjectsForResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class ResourcesScanner extends EventBusInstance {

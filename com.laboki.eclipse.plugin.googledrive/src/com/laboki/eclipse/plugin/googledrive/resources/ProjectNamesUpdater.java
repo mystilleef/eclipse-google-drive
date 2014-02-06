@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.resources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,8 @@ import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserDeSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
+import com.laboki.eclipse.plugin.googledrive.main.EditorContext;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 
 public final class ProjectNamesUpdater extends EventBusInstance {
 

@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.resources;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +11,9 @@ import com.laboki.eclipse.plugin.googledrive.events.DeserializedProjectNamesEven
 import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
+import com.laboki.eclipse.plugin.googledrive.main.EditorContext;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
+import com.laboki.eclipse.plugin.googledrive.main.Serializer;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class ProjectNamesSerializer extends EventBusInstance {
