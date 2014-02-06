@@ -8,17 +8,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import com.laboki.eclipse.plugin.googledrive.events.ScannedResourcesEvent;
-import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceAddedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ResourceRemovedEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ScannedResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserDeSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 
 public final class ResourcesUpdater extends EventBusInstance {
 
 	private final List<IResource> resources = Lists.newArrayList();
-	private List<String> projectNames;
 
 	public ResourcesUpdater(final EventBus eventBus) {
 		super(eventBus);
@@ -26,19 +24,13 @@ public final class ResourcesUpdater extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
-	public void eventHandler(final ProjectNamesEvent event) {
-		this.projectNames = event.getProjectNames();
-	}
-
-	@Subscribe
-	@AllowConcurrentEvents
 	public void eventHandler(final ScannedResourcesEvent event) {
-		this.addUpdate(event.getResources());
+		this.refreshUpdate(event.getResources());
 		this.emitUpdatedProjectResources();
 	}
 
-	private synchronized void addUpdate(final ImmutableList<IResource> resources) {
-		this.resources.removeAll(resources);
+	private void refreshUpdate(final ImmutableList<IResource> resources) {
+		this.resources.clear();
 		this.resources.addAll(resources);
 	}
 
@@ -50,7 +42,6 @@ public final class ResourcesUpdater extends EventBusInstance {
 	}
 
 	private synchronized void addUpdate(final IResource resource) {
-		if (!this.projectNames.contains(resource.getProject().getName())) return;
 		this.resources.remove(resource);
 		this.resources.add(resource);
 	}
@@ -63,7 +54,13 @@ public final class ResourcesUpdater extends EventBusInstance {
 	}
 
 	private void emitUpdatedProjectResources() {
-		this.getEventBus().post(new UpdatedProjectResourcesEvent(this.getResources()));
+		EventBus.post(new UpdatedProjectResourcesEvent(this.getResources()));
+		this.printResources();
+	}
+
+	private void printResources() {
+		for (final IResource resource : this.getResources())
+			EditorContext.out(resource);
 	}
 
 	private synchronized void removeUpdate(final IResource resources) {
@@ -95,5 +92,11 @@ public final class ResourcesUpdater extends EventBusInstance {
 
 	private synchronized ImmutableList<IResource> getResources() {
 		return ImmutableList.copyOf(this.resources);
+	}
+
+	@SuppressWarnings("unused")
+	private synchronized void addUpdate(final ImmutableList<IResource> resources) {
+		this.resources.removeAll(resources);
+		this.resources.addAll(resources);
 	}
 }

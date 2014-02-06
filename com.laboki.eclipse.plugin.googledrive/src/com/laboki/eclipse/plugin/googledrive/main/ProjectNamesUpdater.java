@@ -1,12 +1,16 @@
 package com.laboki.eclipse.plugin.googledrive.main;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.core.resources.ResourcesPlugin;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.DeserializedProjectNamesEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ProjectDeletedEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserDeSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UserSelectedProjectNamesEvent;
@@ -27,18 +31,19 @@ public final class ProjectNamesUpdater extends EventBusInstance {
 		this.emitProjectNamesEvent();
 	}
 
+	@Subscribe
+	@AllowConcurrentEvents
+	public void eventHandler(final UserSelectedProjectNamesEvent event) {
+		this.refreshUpdate(event.getProjectNames());
+		this.emitProjectNamesEvent();
+	}
+
 	private synchronized void refreshUpdate(final ImmutableList<String> names) {
 		this.projectNames.clear();
 		this.projectNames.addAll(names);
 	}
 
-	@Subscribe
-	@AllowConcurrentEvents
-	public void eventHandler(final UserSelectedProjectNamesEvent event) {
-		this.addUpdate(event.getProjectNames());
-		this.emitProjectNamesEvent();
-	}
-
+	@SuppressWarnings("unused")
 	private synchronized void addUpdate(final ImmutableList<String> names) {
 		this.projectNames.removeAll(names);
 		this.projectNames.addAll(names);
@@ -55,8 +60,36 @@ public final class ProjectNamesUpdater extends EventBusInstance {
 		this.projectNames.removeAll(names);
 	}
 
+	@Subscribe
+	@AllowConcurrentEvents
+	public void eventHandler(final ProjectDeletedEvent event) {
+		this.removeUpdate(event.getResource().getName());
+		this.emitProjectNamesEvent();
+	}
+
+	private synchronized void removeUpdate(final String name) {
+		this.projectNames.remove(name);
+	}
+
 	private synchronized void emitProjectNamesEvent() {
-		this.getEventBus().post(new ProjectNamesEvent(this.getProjectNames()));
+		this.removeMissingProjects();
+		EventBus.post(new ProjectNamesEvent(this.getProjectNames()));
+		EditorContext.out(this.getProjectNames());
+	}
+
+	private void removeMissingProjects() {
+		this.removeUpdate(ImmutableList.copyOf(this.findMissingProjects()));
+	}
+
+	private ArrayList<String> findMissingProjects() {
+		final ArrayList<String> missingProjects = Lists.newArrayList();
+		for (final String projectName : this.getProjectNames())
+			if (ProjectNamesUpdater.projectDoesNotExist(projectName)) missingProjects.add(projectName);
+		return missingProjects;
+	}
+
+	private static boolean projectDoesNotExist(final String projectName) {
+		return !ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).exists();
 	}
 
 	private synchronized ImmutableList<String> getProjectNames() {
