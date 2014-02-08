@@ -6,12 +6,11 @@ import java.util.concurrent.Executors;
 import com.google.common.eventbus.AsyncEventBus;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
-public final class EventBus {
+public enum EventBus {
+	INSTANCE;
 
 	private static final Executor EXECUTOR = Executors.newCachedThreadPool();
 	private static final AsyncEventBus BUS = new AsyncEventBus(EventBus.EXECUTOR);
-
-	public EventBus() {}
 
 	public static void register(final Object object) {
 		EventBus.BUS.register(object);
