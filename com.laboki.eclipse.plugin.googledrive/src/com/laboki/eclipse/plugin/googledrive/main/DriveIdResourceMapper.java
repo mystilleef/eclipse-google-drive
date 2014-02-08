@@ -21,12 +21,27 @@ public final class DriveIdResourceMapper {
 
 	public IResource getResourceFromPath(final String resourcePath) {
 		for (final IResource resource : this.resources)
-			if (resourcePath.equals(resource.getFullPath())) return resource;
+			if (resourcePath.equals(resource.getFullPath().toString())) return resource;
 		return null;
 	}
 
+	public IResource getResourceFromFilePath(final String filePath) {
+		for (final IResource resource : this.resources)
+			if (filePath.equals(resource.getLocation().toString())) return resource;
+		return null;
+	}
+
+	public boolean resourceHasId(final IResource resource) {
+		if (this.getIdFromResource(resource) == null) return false;
+		return true;
+	}
+
+	public boolean hasResource(final IResource resource) {
+		return this.getResources().contains(resource);
+	}
+
 	public String getIdFromResource(final IResource resource) {
-		return this.driveIdMap.inverse().get(resource.getFullPath());
+		return this.driveIdMap.inverse().get(resource.getFullPath().toString());
 	}
 
 	public ImmutableList<String> getIds() {
