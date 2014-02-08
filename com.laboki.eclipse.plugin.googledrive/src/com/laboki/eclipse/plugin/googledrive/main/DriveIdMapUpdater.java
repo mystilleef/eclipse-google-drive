@@ -14,7 +14,9 @@ import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.DeserializedDriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ProjectResourcesEvent;
+import com.laboki.eclipse.plugin.googledrive.events.UploadedFileEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
+import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class DriveIdMapUpdater extends EventBusInstance {
 
@@ -26,21 +28,47 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 
 	@Subscribe
 	@AllowConcurrentEvents
+	public void eventHandler(final UploadedFileEvent event) {
+		new Task() {
+
+			@Override
+			protected void execute() {
+				if ((event.getDriveId() == null) || (event.getResource() == null)) return;
+				DriveIdMapUpdater.this.driveIdMap.forcePut(event.getDriveId(), event.getResource().getFullPath().toString());
+				DriveIdMapUpdater.this.emitDriveIdMapEvent();
+			}
+		}.begin();
+	}
+
+	@Subscribe
+	@AllowConcurrentEvents
 	public void eventHandler(final DeserializedDriveIdMapEvent event) {
-		this.refreshUpdate(event.getDriveIdMap());
-		this.emitDriveIdMapEvent();
+		new Task() {
+
+			@Override
+			protected void execute() {
+				DriveIdMapUpdater.this.refreshUpdate(event.getDriveIdMap());
+				DriveIdMapUpdater.this.emitDriveIdMapEvent();
+			}
+		}.begin();
 	}
 
 	private synchronized void refreshUpdate(final ImmutableBiMap<String, String> map) {
 		this.driveIdMap.clear();
-		this.driveIdMap.putAll(map);
+		if (map != null) this.driveIdMap.putAll(map);
 	}
 
 	@Subscribe
 	@AllowConcurrentEvents
 	public void eventHandler(final ProjectResourcesEvent event) {
-		this.refreshUpdate(event.getResources());
-		this.emitDriveIdMapEvent();
+		new Task() {
+
+			@Override
+			protected void execute() {
+				DriveIdMapUpdater.this.refreshUpdate(event.getResources());
+				DriveIdMapUpdater.this.emitDriveIdMapEvent();
+			};
+		}.begin();
 	}
 
 	private synchronized void refreshUpdate(final ImmutableList<IResource> resources) {
@@ -68,7 +96,12 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 	}
 
 	private void emitDriveIdMapEvent() {
-		EventBus.post(new DriveIdMapEvent(ImmutableBiMap.copyOf(this.driveIdMap)));
-		EditorContext.out(this.driveIdMap);
+		new Task() {
+
+			@Override
+			protected void execute() {
+				EventBus.post(new DriveIdMapEvent(ImmutableBiMap.copyOf(DriveIdMapUpdater.this.driveIdMap)));
+			}
+		}.begin();
 	}
 }
