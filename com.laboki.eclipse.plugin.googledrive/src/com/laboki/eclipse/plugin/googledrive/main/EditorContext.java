@@ -31,10 +31,12 @@ import com.laboki.eclipse.plugin.googledrive.task.AsyncTask;
 public enum EditorContext {
 	INSTANCE;
 
+	public static final String GOOGLE_DRIVE_FOLDER_MIMETYPE = "application/vnd.google-apps.folder";
 	public static final IWorkbench WORKBENCH = PlatformUI.getWorkbench();
 	public static final Display DISPLAY = EditorContext.WORKBENCH.getDisplay();
 	public static final IJobManager JOB_MANAGER = Job.getJobManager();
 	public static final String APPLICATION_NAME = "Eclipse Google Drive";
+	public static final String GOOGLE_DRIVE_ROOT_FOLDER = "COM.LABOKI.ECLIPSE.GOOGLE.DRIVE.ROOT";
 	public static final MessageConsole CONSOLE = EditorContext.getConsole("Eclipse Google Drive Console");
 	private static final Logger LOGGER = Logger.getLogger(EditorContext.class.getName());
 
