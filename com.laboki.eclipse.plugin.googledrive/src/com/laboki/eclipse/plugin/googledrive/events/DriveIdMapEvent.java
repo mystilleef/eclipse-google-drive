@@ -11,6 +11,6 @@ public final class DriveIdMapEvent {
 	}
 
 	public ImmutableBiMap<String, String> getDriveIdMap() {
-		return driveIdMap;
+		return this.driveIdMap;
 	}
 }
