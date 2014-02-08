@@ -284,6 +284,8 @@ Export-Package: com.fasterxml.jackson.core;
    com.laboki.eclipse.plugin.googledrive.instance,
    org.eclipse.ui,
    org.eclipse.ui.plugin",
+ com.laboki.eclipse.plugin.googledrive.authorization,
+ com.laboki.eclipse.plugin.googledrive.drive,
  com.laboki.eclipse.plugin.googledrive.events;uses:="com.google.common.collect,com.google.api.client.auth.oauth2,com.google.api.client.googleapis.auth.oauth2",
  com.laboki.eclipse.plugin.googledrive.instance;uses:="com.laboki.eclipse.plugin.googledrive.main",
  com.laboki.eclipse.plugin.googledrive.main;
@@ -299,7 +301,9 @@ Export-Package: com.fasterxml.jackson.core;
    com.laboki.eclipse.plugin.googledrive.events,
    com.google.api.client.json,
    com.google.api.client.http",
+ com.laboki.eclipse.plugin.googledrive.resources,
  com.laboki.eclipse.plugin.googledrive.task;uses:="org.eclipse.core.runtime.jobs,com.laboki.eclipse.plugin.googledrive.instance,org.eclipse.core.runtime",
+ com.laboki.eclipse.plugin.googledrive.ui,
  javax.annotation;uses:="javax.annotation.meta",
  javax.annotation.concurrent,
  javax.annotation.meta,
