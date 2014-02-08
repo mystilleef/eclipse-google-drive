@@ -17,7 +17,7 @@ import com.laboki.eclipse.plugin.googledrive.ui.ProjectSelectionDialog;
 public final class Services implements Instance {
 
 	private final List<Instance> instances = Lists.newArrayList();
-	private final EventBus eventBus = new EventBus();
+	private final EventBus eventBus = EventBus.INSTANCE;
 
 	@Override
 	public Instance begin() {
@@ -26,6 +26,7 @@ public final class Services implements Instance {
 	}
 
 	private void startServices() {
+		this.startService(new ProjectUploader(this.eventBus));
 		this.startService(new ProjectSelectionDialog(this.eventBus));
 		this.startService(new DriveIdResourceMapperUpdater(this.eventBus));
 		this.startService(new DriveIdMapUpdater(this.eventBus));
@@ -36,6 +37,9 @@ public final class Services implements Instance {
 		this.startService(new ProjectNamesSerializer(this.eventBus));
 		this.startService(new ResourcesMonitor(this.eventBus));
 		this.startService(new AuthorizationBrower(this.eventBus));
+		this.startService(new RootParentFolderCreator(this.eventBus));
+		this.startService(new RootParentIdFinder(this.eventBus));
+		this.startService(new DriveServiceHandler(this.eventBus));
 		this.startService(new GoogleAuthorization(this.eventBus));
 	}
 
