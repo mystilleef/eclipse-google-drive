@@ -1,31 +1,41 @@
-package com.laboki.eclipse.plugin.googledrive.main;
+package com.laboki.eclipse.plugin.googledrive.drive;
 
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.resources.IResource;
+
 import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.FileContent;
+import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.Drive.Files.Insert;
 import com.google.api.services.drive.Drive.Files.Update;
 import com.google.api.services.drive.model.File;
+import com.laboki.eclipse.plugin.googledrive.events.UploadedFileEvent;
+import com.laboki.eclipse.plugin.googledrive.main.EditorContext;
+import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 
-class Uploader {
+public class Uploader {
 
 	private final Drive drive;
 	protected final java.io.File ioFile;
 	protected final String mimeType;
 	protected final File metadata;
-	private static final Logger LOGGER = Logger.getLogger(UploadInserter.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Inserter.class.getName());
+	private final String filePath;
+	private final IResource resource;
 
-	protected Uploader(final Drive drive, final File metadata, final String filePath, final String mimeType) {
-		this.drive = drive;
-		this.metadata = metadata;
-		this.mimeType = mimeType;
-		this.ioFile = new java.io.File(filePath);
+	protected Uploader(final Drive drive, final IResource resource, final File metadata) {
+		this.drive = Preconditions.checkNotNull(drive);
+		this.resource = Preconditions.checkNotNull(resource);
+		this.metadata = Preconditions.checkNotNull(metadata);
+		this.filePath = Preconditions.checkNotNull(resource.getLocation().toOSString());
+		this.mimeType = Preconditions.checkNotNull(metadata.getMimeType());
+		this.ioFile = Preconditions.checkNotNull(new java.io.File(this.filePath));
 	}
 
 	protected String getFileId() {
@@ -34,11 +44,6 @@ class Uploader {
 
 	protected FileContent getFileContent() {
 		return new FileContent(this.mimeType, this.ioFile);
-	}
-
-	protected void createNewFolder() throws IOException {
-		final File _metadata = this.insert(this.metadata).execute();
-		System.out.println(_metadata.getTitle() + " Folder created");
 	}
 
 	protected Insert insert(final File metadata) throws IOException {
@@ -87,43 +92,44 @@ class Uploader {
 		final MediaHttpUploader uploader = insert.getMediaHttpUploader();
 		uploader.setDirectUploadEnabled(false);
 		uploader.setProgressListener(new FileUploadProgressListener());
+		uploader.setDisableGZipContent(false);
 	}
 
 	private void initUploader(final Drive.Files.Update update) {
 		final MediaHttpUploader uploader = update.getMediaHttpUploader();
 		uploader.setDirectUploadEnabled(false);
 		uploader.setProgressListener(new FileUploadProgressListener());
+		uploader.setDisableGZipContent(false);
 	}
 
 	private class FileUploadProgressListener implements MediaHttpUploaderProgressListener {
 
 		@Override
 		public void progressChanged(final MediaHttpUploader uploader) throws IOException {
-			System.out.println("===================");
 			switch (uploader.getUploadState()) {
 				case INITIATION_STARTED:
-					System.out.println("Upload Initiation has started for " + Uploader.this.metadata.getTitle());
+					EditorContext.out("Upload Initiation has started for " + Uploader.this.metadata.getTitle());
 					break;
 				case INITIATION_COMPLETE:
-					System.out.println("Upload Initiation is Complete for " + Uploader.this.metadata.getTitle());
+					EditorContext.out("Upload Initiation is Complete for " + Uploader.this.metadata.getTitle());
 					break;
 				case MEDIA_IN_PROGRESS:
-					System.out.println(Uploader.this.metadata.getTitle() + " Upload Progress: " + NumberFormat.getPercentInstance().format(uploader.getProgress()));
+					EditorContext.out(Uploader.this.metadata.getTitle() + " Upload Progress: " + NumberFormat.getPercentInstance().format(uploader.getProgress()));
 					break;
 				case MEDIA_COMPLETE:
-					System.out.println("Upload is Complete - " + Uploader.this.metadata.getTitle());
+					EditorContext.out("Upload is Complete - " + Uploader.this.metadata.getTitle());
+					EventBus.post(new UploadedFileEvent(Uploader.this.metadata.getId(), Uploader.this.resource));
 					break;
 				case NOT_STARTED:
 					break;
 				default:
 					break;
 			}
-			System.out.println("===================");
 		}
 	}
 
 	private void handleUploadError(final IOException e) {
-		System.out.println("Failed to insert new file" + this.metadata.getTitle());
+		EditorContext.out("Failed to insert new file" + this.metadata.getTitle());
 		Uploader.LOGGER.log(Level.SEVERE, e.getMessage(), e);
 	}
 }
