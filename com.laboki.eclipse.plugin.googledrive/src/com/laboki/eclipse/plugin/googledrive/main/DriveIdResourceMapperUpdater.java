@@ -9,6 +9,7 @@ import com.laboki.eclipse.plugin.googledrive.events.DriveIdMapEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveIdResourceMapperEvent;
 import com.laboki.eclipse.plugin.googledrive.events.ProjectResourcesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
+import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class DriveIdResourceMapperUpdater extends EventBusInstance {
 
@@ -27,6 +28,12 @@ public final class DriveIdResourceMapperUpdater extends EventBusInstance {
 	@Subscribe
 	@AllowConcurrentEvents
 	public void eventHandler(final DriveIdMapEvent event) {
-		EventBus.post(new DriveIdResourceMapperEvent(new DriveIdResourceMapper(event.getDriveIdMap(), this.resources)));
+		new Task() {
+
+			@Override
+			protected void execute() {
+				EventBus.post(new DriveIdResourceMapperEvent(new DriveIdResourceMapper(event.getDriveIdMap(), DriveIdResourceMapperUpdater.this.resources)));
+			};
+		}.begin();
 	}
 }
