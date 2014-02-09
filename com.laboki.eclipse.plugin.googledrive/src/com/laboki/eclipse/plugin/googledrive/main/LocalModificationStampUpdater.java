@@ -1,4 +1,4 @@
-package com.laboki.eclipse.plugin.googledrive.events;
+package com.laboki.eclipse.plugin.googledrive.main;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,8 +9,11 @@ import org.eclipse.core.runtime.CoreException;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.laboki.eclipse.plugin.googledrive.events.LocalFolderModificationStampUpdatedEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ResourceAddedEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ResourceChangedEvent;
+import com.laboki.eclipse.plugin.googledrive.events.ResourceRemovedEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
-import com.laboki.eclipse.plugin.googledrive.main.EventBus;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class LocalModificationStampUpdater extends EventBusInstance {
