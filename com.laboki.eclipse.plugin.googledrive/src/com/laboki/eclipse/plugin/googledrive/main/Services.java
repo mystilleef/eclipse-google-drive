@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.laboki.eclipse.plugin.googledrive.authorization.AuthorizationBrower;
 import com.laboki.eclipse.plugin.googledrive.authorization.GoogleAuthorization;
+import com.laboki.eclipse.plugin.googledrive.events.LocalModificationStampUpdater;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
 import com.laboki.eclipse.plugin.googledrive.resources.ProjectNamesSerializer;
 import com.laboki.eclipse.plugin.googledrive.resources.ProjectNamesUpdater;
@@ -26,6 +27,7 @@ public final class Services implements Instance {
 	}
 
 	private void startServices() {
+		this.startService(new LocalModificationStampUpdater(this.eventBus));
 		this.startService(new ProjectUploader(this.eventBus));
 		this.startService(new ProjectSelectionDialog(this.eventBus));
 		this.startService(new DriveIdResourceMapperUpdater(this.eventBus));

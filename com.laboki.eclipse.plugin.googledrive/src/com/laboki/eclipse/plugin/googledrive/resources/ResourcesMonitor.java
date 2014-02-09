@@ -47,7 +47,7 @@ public final class ResourcesMonitor extends EventBusInstance implements IResourc
 	private void emitChangedResourceEvent(final IResourceChangeEvent event, final IResource resource) {
 		switch (event.getType()) {
 			case IResourceChangeEvent.PRE_DELETE:
-				this.getEventBus().post(new ProjectDeletedEvent(resource));
+				EventBus.post(new ProjectDeletedEvent(resource));
 				break;
 			case IResourceChangeEvent.POST_CHANGE:
 				this.newResourceDeltaMonitor(event);
@@ -76,13 +76,13 @@ public final class ResourcesMonitor extends EventBusInstance implements IResourc
 		private void emitChangedResourceEvent(final IResourceDelta delta, final IResource resource) {
 			switch (delta.getKind()) {
 				case IResourceDelta.ADDED:
-					ResourcesMonitor.this.getEventBus().post(new ResourceAddedEvent(resource));
+					EventBus.post(new ResourceAddedEvent(resource));
 					break;
 				case IResourceDelta.REMOVED:
-					ResourcesMonitor.this.getEventBus().post(new ResourceRemovedEvent(resource));
+					EventBus.post(new ResourceRemovedEvent(resource));
 					break;
 				case IResourceDelta.CHANGED:
-					if (resource.getType() == IResource.FILE) ResourcesMonitor.this.getEventBus().post(new ResourceChangedEvent(resource));
+					if (resource.getType() == IResource.FILE) EventBus.post(new ResourceChangedEvent(resource));
 					break;
 				default:
 					break;
