@@ -95,7 +95,6 @@ public final class RemoteModificationStampUpdater extends EventBusInstance {
 
 			private void updateRemoteFile(final String fileId, final File metadata) throws IOException {
 				RemoteModificationStampUpdater.this.drive.files().update(fileId, metadata).execute();
-				System.out.println("Updated remote file.");
 			}
 		}.begin();
 	}
