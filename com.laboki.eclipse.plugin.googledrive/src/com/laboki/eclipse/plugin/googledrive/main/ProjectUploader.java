@@ -11,6 +11,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.DriveServiceEvent;
 import com.laboki.eclipse.plugin.googledrive.events.UploadProjectsEvent;
+import com.laboki.eclipse.plugin.googledrive.events.UserSelectedProjectNamesEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.instance.Instance;
 import com.laboki.eclipse.plugin.googledrive.resources.FolderScanner;
@@ -36,6 +37,18 @@ public final class ProjectUploader extends EventBusInstance {
 	@AllowConcurrentEvents
 	public void eventHandler(final RootParentIdEvent event) {
 		this.id = event.getRootParentId();
+	}
+
+	@Subscribe
+	@AllowConcurrentEvents
+	public static void eventHandler(final UserSelectedProjectNamesEvent event) {
+		new Task() {
+
+			@Override
+			protected void execute() {
+				EventBus.post(new UploadProjectsEvent(event.getProjectNames()));
+			}
+		}.begin();
 	}
 
 	@Subscribe
