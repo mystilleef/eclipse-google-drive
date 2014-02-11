@@ -33,7 +33,6 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 
 			@Override
 			protected void execute() {
-				if ((event.getDriveId() == null) || (event.getResource() == null)) return;
 				DriveIdMapUpdater.this.driveIdMap.forcePut(event.getDriveId(), event.getResource().getFullPath().toString());
 				DriveIdMapUpdater.this.emitDriveIdMapEvent();
 			}
