@@ -14,6 +14,8 @@ import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.DriveIdResourceMapperEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveServiceEvent;
 import com.laboki.eclipse.plugin.googledrive.events.LocalFolderModificationStampUpdatedEvent;
+import com.laboki.eclipse.plugin.googledrive.exception.DriveIdMapperNotReadyException;
+import com.laboki.eclipse.plugin.googledrive.exception.DriveServiceNotReadyException;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 
@@ -51,20 +53,25 @@ public final class RemoteModificationStampUpdater extends EventBusInstance {
 					this.tryToUpdateRemoteModificationStamp(event.getResource());
 				} catch (final IOException e) {
 					RemoteModificationStampUpdater.LOGGER.log(Level.WARNING, e.getMessage(), e);
+				} catch (final DriveIdMapperNotReadyException e) {
+					RemoteModificationStampUpdater.LOGGER.info(e.getMessage());
+				} catch (final DriveServiceNotReadyException e) {
+					RemoteModificationStampUpdater.LOGGER.info(e.getMessage());
 				}
 			}
 
-			private boolean isNotMapped(final IResource resource) {
+			private boolean isNotMapped(final IResource resource) throws DriveIdMapperNotReadyException {
 				return !this.isMapped(resource);
 			}
 
-			private boolean isMapped(final IResource resource) {
+			private boolean isMapped(final IResource resource) throws DriveIdMapperNotReadyException {
+				if (RemoteModificationStampUpdater.this.mapper == null) throw new DriveIdMapperNotReadyException("Error: Mapper service is not ready");
 				if (!RemoteModificationStampUpdater.this.mapper.hasResource(resource)) return false;
 				if (!RemoteModificationStampUpdater.this.mapper.resourceHasId(resource)) return false;
 				return true;
 			}
 
-			private void tryToUpdateRemoteModificationStamp(final IResource resource) throws IOException {
+			private void tryToUpdateRemoteModificationStamp(final IResource resource) throws IOException, DriveServiceNotReadyException {
 				final String fileId = this.getFileId(resource);
 				final File metadata = this.getMetadata(fileId);
 				this.updateModificationStamp(resource, metadata);
@@ -75,7 +82,8 @@ public final class RemoteModificationStampUpdater extends EventBusInstance {
 				return RemoteModificationStampUpdater.this.mapper.getIdFromResource(resource);
 			}
 
-			private File getMetadata(final String fileId) throws IOException {
+			private File getMetadata(final String fileId) throws IOException, DriveServiceNotReadyException {
+				if (RemoteModificationStampUpdater.this.drive == null) throw new DriveServiceNotReadyException("Error: Drive service is not ready.");
 				return RemoteModificationStampUpdater.this.drive.files().get(fileId).execute();
 			}
 
@@ -87,6 +95,7 @@ public final class RemoteModificationStampUpdater extends EventBusInstance {
 
 			private void updateRemoteFile(final String fileId, final File metadata) throws IOException {
 				RemoteModificationStampUpdater.this.drive.files().update(fileId, metadata).execute();
+				System.out.println("Updated remote file.");
 			}
 		}.begin();
 	}
