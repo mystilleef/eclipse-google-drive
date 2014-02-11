@@ -26,6 +26,7 @@ public final class Services implements Instance {
 	}
 
 	private void startServices() {
+		this.startService(new FileUpdater(this.eventBus));
 		this.startService(new RemoteModificationStampUpdater(this.eventBus));
 		this.startService(new LocalModificationStampUpdater(this.eventBus));
 		this.startService(new ProjectUploader(this.eventBus));
