@@ -24,7 +24,7 @@ public class Uploader {
 	private final Drive drive;
 	protected final java.io.File ioFile;
 	protected final String mimeType;
-	protected final File metadata;
+	protected File metadata;
 	private static final Logger LOGGER = Logger.getLogger(Inserter.class.getName());
 	private final String filePath;
 	private final IResource resource;
@@ -72,7 +72,8 @@ public class Uploader {
 
 	private void tryToUploadFile(final Insert insert) throws IOException {
 		this.initUploader(insert);
-		insert.execute();
+		this.metadata = insert.execute();
+		this.emitUploadEvent();
 	}
 
 	protected void uploadFile(final Update update) {
@@ -85,7 +86,8 @@ public class Uploader {
 
 	private void tryToUploadFile(final Update update) throws IOException {
 		this.initUploader(update);
-		update.execute();
+		this.metadata = update.execute();
+		this.emitUploadEvent();
 	}
 
 	private void initUploader(final Drive.Files.Insert insert) {
@@ -100,6 +102,10 @@ public class Uploader {
 		uploader.setDirectUploadEnabled(false);
 		uploader.setProgressListener(new FileUploadProgressListener());
 		uploader.setDisableGZipContent(false);
+	}
+
+	private void emitUploadEvent() {
+		EventBus.post(new UploadedFileEvent(this.getFileId(), this.resource));
 	}
 
 	private class FileUploadProgressListener implements MediaHttpUploaderProgressListener {
@@ -118,7 +124,6 @@ public class Uploader {
 					break;
 				case MEDIA_COMPLETE:
 					EditorContext.out("Upload is Complete - " + Uploader.this.metadata.getTitle());
-					EventBus.post(new UploadedFileEvent(Uploader.this.metadata.getId(), Uploader.this.resource));
 					break;
 				case NOT_STARTED:
 					break;
