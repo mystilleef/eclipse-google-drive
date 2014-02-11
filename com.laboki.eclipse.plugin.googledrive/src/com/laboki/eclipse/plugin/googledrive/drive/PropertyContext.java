@@ -13,11 +13,12 @@ public enum PropertyContext {
 
 	public static void update(final IResource resource, final File metadata) {
 		final List<Property> properties = Lists.newArrayList();
-		properties.add(PropertyContext.newResourcePathProperty(resource));
+		// properties.add(PropertyContext.newResourcePathProperty(resource));
 		properties.add(PropertyContext.newProjectTypeProperty(resource));
 		metadata.setProperties(properties);
 	}
 
+	@SuppressWarnings("unused")
 	private static Property newResourcePathProperty(final IResource resource) {
 		final Property property = new Property();
 		property.setKey("resourcePath");
