@@ -53,6 +53,14 @@ public enum EditorContext {
 	}
 
 	private static void tryToFlushEvent() {
+		if (EditorContext.isValidDisplay()) EditorContext.updateDisplay();
+	}
+
+	private static boolean isValidDisplay() {
+		return !EditorContext.isInvalidDisplay();
+	}
+
+	private static void updateDisplay() {
 		while (EditorContext.DISPLAY.readAndDispatch())
 			EditorContext.DISPLAY.update();
 	}
