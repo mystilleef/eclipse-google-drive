@@ -1,6 +1,8 @@
 package com.laboki.eclipse.plugin.googledrive.main;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -14,6 +16,7 @@ import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class RootParentFolderCreator extends EventBusInstance {
 
+	private static final Logger LOGGER = Logger.getLogger(RootParentFolderCreator.class.getName());
 	private Drive drive;
 
 	public RootParentFolderCreator(final EventBus eventBus) {
@@ -33,18 +36,15 @@ public final class RootParentFolderCreator extends EventBusInstance {
 
 			@Override
 			protected void execute() {
-				final String id = this.getId();
-				if (id == null) EditorContext.out("FAILED TO CREATE ROOT PARENT FOLDER");
-				else EventBus.post(new RootParentIdEvent(id));
+				try {
+					EventBus.post(new RootParentIdEvent(this.getId()));
+				} catch (final IOException e) {
+					RootParentFolderCreator.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				}
 			}
 
-			private String getId() {
-				try {
-					return new FolderInserter(RootParentFolderCreator.this.drive, this.getMetadata()).getId();
-				} catch (final IOException e) {
-					e.printStackTrace();
-				}
-				return null;
+			private String getId() throws IOException {
+				return new FolderInserter(RootParentFolderCreator.this.drive, this.getMetadata()).getId();
 			}
 
 			private File getMetadata() {
