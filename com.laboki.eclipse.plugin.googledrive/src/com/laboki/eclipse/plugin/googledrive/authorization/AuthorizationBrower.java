@@ -43,57 +43,58 @@ public final class AuthorizationBrower extends EventBusInstance {
 
 			@Override
 			protected void asyncExecute() {
-				AuthorizationBrower.this.show(event.getFlow());
+				this.show(event.getFlow());
+			}
+
+			protected void show(final GoogleAuthorizationCodeFlow flow) {
+				this.showAuthorizationPage(flow);
+			}
+
+			private void showAuthorizationPage(final GoogleAuthorizationCodeFlow flow) {
+				final Browser browser = this.createBrowser(flow);
+				this.addBrowserTitleListener(browser, flow);
+				AuthorizationBrower.SHELL.open();
+			}
+
+			private Browser createBrowser(final GoogleAuthorizationCodeFlow flow) {
+				final Browser browser = new Browser(AuthorizationBrower.SHELL, SWT.NONE);
+				browser.setUrl(this.getAuthorizationUrl(flow));
+				return browser;
+			}
+
+			private String getAuthorizationUrl(final GoogleAuthorizationCodeFlow flow) {
+				return flow.newAuthorizationUrl().setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).build();
+			}
+
+			private void addBrowserTitleListener(final Browser browser, final GoogleAuthorizationCodeFlow flow) {
+				browser.addTitleListener(new TitleListener() {
+
+					@Override
+					public void changed(final TitleEvent event) {
+						AuthorizationBrower.SHELL.setText(event.title);
+						this.handleResponse(event.title);
+					}
+
+					private void handleResponse(final String title) {
+						if (!title.contains("=")) return;
+						this.emitAuthorizationResult(title.split("=")[1]);
+					}
+
+					private void emitAuthorizationResult(final String result) {
+						if (!result.equals("access_denied")) this.emitAuthorizationCode(result);
+						else this.checkForAuthorizationFailure(result);
+					}
+
+					private void emitAuthorizationCode(final String result) {
+						AuthorizationBrower.this.getEventBus();
+						EventBus.post(new GoogleAuthorizationCodeEvent(result, flow));
+					}
+
+					private void checkForAuthorizationFailure(final String result) {
+						AuthorizationBrower.LOGGER.info(result);
+					}
+				});
 			}
 		}.begin();
-	}
-
-	protected void show(final GoogleAuthorizationCodeFlow flow) {
-		this.showAuthorizationPage(flow);
-	}
-
-	private void showAuthorizationPage(final GoogleAuthorizationCodeFlow flow) {
-		final Browser browser = AuthorizationBrower.createBrowser(flow);
-		this.addBrowserTitleListener(browser, flow);
-		AuthorizationBrower.SHELL.open();
-	}
-
-	private static Browser createBrowser(final GoogleAuthorizationCodeFlow flow) {
-		final Browser browser = new Browser(AuthorizationBrower.SHELL, SWT.NONE);
-		browser.setUrl(AuthorizationBrower.getAuthorizationUrl(flow));
-		return browser;
-	}
-
-	private static String getAuthorizationUrl(final GoogleAuthorizationCodeFlow flow) {
-		return flow.newAuthorizationUrl().setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).build();
-	}
-
-	private void addBrowserTitleListener(final Browser browser, final GoogleAuthorizationCodeFlow flow) {
-		browser.addTitleListener(new TitleListener() {
-
-			@Override
-			public void changed(final TitleEvent event) {
-				AuthorizationBrower.SHELL.setText(event.title);
-				this.handleResponse(event.title);
-			}
-
-			private void handleResponse(final String title) {
-				if (!title.contains("=")) return;
-				this.emitAuthorizationResult(title.split("=")[1]);
-			}
-
-			private void emitAuthorizationResult(final String result) {
-				if (!result.equals("access_denied")) this.emitAuthorizationCode(result);
-				else this.checkForAuthorizationFailure(result);
-			}
-
-			private void emitAuthorizationCode(final String result) {
-				AuthorizationBrower.this.getEventBus().post(new GoogleAuthorizationCodeEvent(result, flow));
-			}
-
-			private void checkForAuthorizationFailure(final String result) {
-				AuthorizationBrower.LOGGER.info(result);
-			}
-		});
 	}
 }
