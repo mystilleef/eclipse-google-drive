@@ -11,6 +11,7 @@ import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.drive.FolderInserter;
 import com.laboki.eclipse.plugin.googledrive.events.CreateRootParentFolderEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveServiceEvent;
+import com.laboki.eclipse.plugin.googledrive.events.RootParentIdEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 import com.laboki.eclipse.plugin.googledrive.task.Task;
 

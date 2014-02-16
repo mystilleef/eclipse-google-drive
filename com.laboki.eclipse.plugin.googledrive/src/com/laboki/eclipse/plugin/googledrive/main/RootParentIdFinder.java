@@ -11,6 +11,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.laboki.eclipse.plugin.googledrive.events.CreateRootParentFolderEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveServiceEvent;
+import com.laboki.eclipse.plugin.googledrive.events.RootParentIdEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
 
 public final class RootParentIdFinder extends EventBusInstance {
