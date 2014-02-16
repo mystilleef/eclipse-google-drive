@@ -54,7 +54,7 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 
 	private synchronized void refreshUpdate(final ImmutableBiMap<String, String> map) {
 		this.driveIdMap.clear();
-		if (map != null) this.driveIdMap.putAll(map);
+		this.driveIdMap.putAll(map);
 	}
 
 	@Subscribe
