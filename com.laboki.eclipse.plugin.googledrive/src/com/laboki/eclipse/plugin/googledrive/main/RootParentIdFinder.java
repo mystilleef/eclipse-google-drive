@@ -13,9 +13,11 @@ import com.laboki.eclipse.plugin.googledrive.events.CreateRootParentFolderEvent;
 import com.laboki.eclipse.plugin.googledrive.events.DriveServiceEvent;
 import com.laboki.eclipse.plugin.googledrive.events.RootParentIdEvent;
 import com.laboki.eclipse.plugin.googledrive.instance.EventBusInstance;
+import com.laboki.eclipse.plugin.googledrive.task.Task;
 
 public final class RootParentIdFinder extends EventBusInstance {
 
+	private static final String QUERY = "title = " + "'" + EditorContext.GOOGLE_DRIVE_ROOT_FOLDER + "'" + " and mimeType = 'application/vnd.google-apps.folder'";
 	private static final Logger LOGGER = Logger.getLogger(RootParentIdFinder.class.getName());
 	private Drive drive;
 
@@ -27,33 +29,42 @@ public final class RootParentIdFinder extends EventBusInstance {
 	@AllowConcurrentEvents
 	public void eventHandler(final DriveServiceEvent event) {
 		this.drive = event.getDriveService();
-		this.findRootParentId();
+		this.findRootIdTask();
 	}
 
-	private void findRootParentId() {
-		try {
-			final String query = "title = " + "'" + EditorContext.GOOGLE_DRIVE_ROOT_FOLDER + "'" + " and mimeType = 'application/vnd.google-apps.folder'";
-			this.tryToFindRootParentId(query);
-		} catch (final IOException e) {
-			RootParentIdFinder.LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		}
-	}
+	private void findRootIdTask() {
+		new Task() {
 
-	private void tryToFindRootParentId(final String query) throws IOException {
-		final List<File> results = this.drive.files().list().setQ(query).execute().getItems();
-		if (results.size() == 0) EventBus.post(new CreateRootParentFolderEvent());
-		else RootParentIdFinder.getIdFromResult(results);
-	}
+			@Override
+			protected void execute() {
+				try {
+					this.trytofindRootParentId();
+				} catch (final IOException e) {
+					RootParentIdFinder.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				}
+			}
 
-	private static void getIdFromResult(final List<File> results) {
-		final String id = RootParentIdFinder.getId(results);
-		if (id == null) EventBus.post(new CreateRootParentFolderEvent());
-		else EventBus.post(new RootParentIdEvent(id));
-	}
+			private void trytofindRootParentId() throws IOException {
+				this.findRootParentId(QUERY);
+			}
 
-	private static String getId(final List<File> results) {
-		for (final File file : results)
-			if (EditorContext.GOOGLE_DRIVE_ROOT_FOLDER.equals(file.getTitle())) return file.getId();
-		return null;
+			private void findRootParentId(final String query) throws IOException {
+				final List<File> results = RootParentIdFinder.this.drive.files().list().setQ(query).execute().getItems();
+				if (results.size() == 0) EventBus.post(new CreateRootParentFolderEvent());
+				else this.getIdFromResult(results);
+			}
+
+			private void getIdFromResult(final List<File> results) {
+				final String id = this.getId(results);
+				if (id == null) EventBus.post(new CreateRootParentFolderEvent());
+				else EventBus.post(new RootParentIdEvent(id));
+			}
+
+			private String getId(final List<File> results) {
+				for (final File file : results)
+					if (EditorContext.GOOGLE_DRIVE_ROOT_FOLDER.equals(file.getTitle())) return file.getId();
+				return null;
+			}
+		}.begin();
 	}
 }
