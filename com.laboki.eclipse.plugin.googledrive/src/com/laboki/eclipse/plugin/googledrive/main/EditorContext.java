@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -26,7 +25,6 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.part.FileEditorInput;
 
 import com.laboki.eclipse.plugin.googledrive.Activator;
-import com.laboki.eclipse.plugin.googledrive.task.AsyncTask;
 
 public enum EditorContext {
 	INSTANCE;
@@ -40,43 +38,8 @@ public enum EditorContext {
 	public static final MessageConsole CONSOLE = EditorContext.getConsole("Eclipse Google Drive Console");
 	private static final Logger LOGGER = Logger.getLogger(EditorContext.class.getName());
 
-	public static String getPluginFolderPath() {
-		return Activator.getInstance().getStateLocation().toOSString();
-	}
-
-	public static void flushEvents() {
-		try {
-			EditorContext.tryToFlushEvent();
-		} catch (final Exception e) {
-			EditorContext.LOGGER.log(Level.FINEST, e.getMessage(), e);
-		}
-	}
-
-	private static void tryToFlushEvent() {
-		if (EditorContext.isValidDisplay()) EditorContext.updateDisplay();
-	}
-
-	private static boolean isValidDisplay() {
-		return !EditorContext.isInvalidDisplay();
-	}
-
-	private static void updateDisplay() {
-		while (EditorContext.DISPLAY.readAndDispatch())
-			EditorContext.DISPLAY.update();
-	}
-
-	public static void asyncExec(final Runnable runnable) {
-		if (EditorContext.isInvalidDisplay()) return;
-		EditorContext.DISPLAY.asyncExec(runnable);
-	}
-
-	public static void syncExec(final Runnable runnable) {
-		if (EditorContext.isInvalidDisplay()) return;
-		EditorContext.DISPLAY.syncExec(runnable);
-	}
-
-	private static boolean isInvalidDisplay() {
-		return (EditorContext.DISPLAY == null) || EditorContext.DISPLAY.isDisposed();
+	public static IPartService getPartService() {
+		return (IPartService) EditorContext.WORKBENCH.getActiveWorkbenchWindow().getService(IPartService.class);
 	}
 
 	public static Shell getShell() {
@@ -91,12 +54,8 @@ public enum EditorContext {
 		return ((FileEditorInput) editor.getEditorInput()).getFile();
 	}
 
-	public static IPartService getPartService() {
-		return (IPartService) EditorContext.WORKBENCH.getActiveWorkbenchWindow().getService(IPartService.class);
-	}
-
-	public static Control getControl(final IEditorPart editor) {
-		return (Control) editor.getAdapter(Control.class);
+	public static String getPluginFolderPath() {
+		return Activator.getInstance().getStateLocation().toOSString();
 	}
 
 	public static void cancelJobsBelongingTo(final String... jobNames) {
@@ -110,20 +69,9 @@ public enum EditorContext {
 
 	public static void out(final Object message) {
 		EditorContext.CONSOLE.newMessageStream().println(String.valueOf(message));
-		EditorContext.startShowConsoleTask();
 	}
 
-	private static void startShowConsoleTask() {
-		new AsyncTask() {
-
-			@Override
-			protected void asyncExecute() {
-				EditorContext.showConsole();
-			};
-		}.begin();
-	}
-
-	private static void showConsole() {
+	public static void showPluginConsole() {
 		try {
 			EditorContext.tryToShowConsole();
 		} catch (final PartInitException e) {
@@ -156,8 +104,7 @@ public enum EditorContext {
 
 	public static void emptyFile(final String filePath) {
 		final File f = new File(filePath);
-		if (f.exists()) return;
-		EditorContext.createEmptyFile(f);
+		if (!f.exists()) EditorContext.createEmptyFile(f);
 	}
 
 	private static void createEmptyFile(final File f) {
@@ -172,5 +119,38 @@ public enum EditorContext {
 		final BufferedWriter out = new BufferedWriter(new FileWriter(f));
 		out.write("");
 		out.close();
+	}
+
+	public static void flushEvents() {
+		try {
+			EditorContext.tryToFlushEvents();
+		} catch (final Exception e) {
+			EditorContext.LOGGER.log(Level.FINEST, e.getMessage(), e);
+		}
+	}
+
+	private static void tryToFlushEvents() {
+		if (EditorContext.isValidDisplay()) EditorContext.updateDisplay();
+	}
+
+	private static void updateDisplay() {
+		while (EditorContext.DISPLAY.readAndDispatch())
+			EditorContext.DISPLAY.update();
+	}
+
+	public static void asyncExec(final Runnable runnable) {
+		if (EditorContext.isValidDisplay()) EditorContext.DISPLAY.asyncExec(runnable);
+	}
+
+	public static void syncExec(final Runnable runnable) {
+		if (EditorContext.isValidDisplay()) EditorContext.DISPLAY.syncExec(runnable);
+	}
+
+	private static boolean isValidDisplay() {
+		return !EditorContext.isInvalidDisplay();
+	}
+
+	private static boolean isInvalidDisplay() {
+		return (EditorContext.DISPLAY == null) || EditorContext.DISPLAY.isDisposed();
 	}
 }
