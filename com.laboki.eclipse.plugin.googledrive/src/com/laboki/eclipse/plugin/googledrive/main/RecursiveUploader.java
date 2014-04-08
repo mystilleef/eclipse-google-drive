@@ -81,12 +81,16 @@ public final class RecursiveUploader extends EventBusInstance {
 
 	private void upload() {
 		try {
-			if (this.resources.size() == 0) throw new FinishedProjectsUploadException();
-			final IResource resource = this.resources.get(0);
-			this.beginUpload(resource, this.newMetadata(resource));
+			this.tryToUpload();
 		} catch (final FinishedProjectsUploadException e) {
 			this.projectUploader.stopService(this);
 		}
+	}
+
+	private void tryToUpload() throws FinishedProjectsUploadException {
+		if (this.resources.size() == 0) throw new FinishedProjectsUploadException();
+		final IResource resource = this.resources.get(0);
+		this.beginUpload(resource, this.newMetadata(resource));
 	}
 
 	private void beginUpload(final IResource resource, final File metadata) {
