@@ -1,6 +1,5 @@
 package com.laboki.eclipse.plugin.googledrive.main;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import com.google.common.eventbus.AsyncEventBus;
@@ -9,8 +8,7 @@ import com.laboki.eclipse.plugin.googledrive.task.Task;
 public enum EventBus {
 	INSTANCE;
 
-	private static final Executor EXECUTOR = Executors.newCachedThreadPool();
-	private static final AsyncEventBus BUS = new AsyncEventBus(EventBus.EXECUTOR);
+	private static final AsyncEventBus BUS = new AsyncEventBus(Executors.newCachedThreadPool());
 
 	public static void register(final Object object) {
 		EventBus.BUS.register(object);
