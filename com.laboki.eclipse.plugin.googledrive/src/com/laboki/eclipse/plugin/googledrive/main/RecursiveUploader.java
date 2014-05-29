@@ -2,6 +2,8 @@ package com.laboki.eclipse.plugin.googledrive.main;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.core.resources.IResource;
 
@@ -26,6 +28,7 @@ public final class RecursiveUploader extends EventBusInstance {
 	private final String rootFolderId;
 	private final BiMap<String, IResource> uploadedResourcesCache = HashBiMap.create();
 	private final ProjectUploader projectUploader;
+	private static final Logger LOGGER = Logger.getLogger(RecursiveUploader.class.getName());
 
 	public RecursiveUploader(final ProjectUploader projectUploader, final EventBus eventBus, final Drive drive, final String rootFolderid, final List<IResource> resources) {
 		super(eventBus);
@@ -106,7 +109,7 @@ public final class RecursiveUploader extends EventBusInstance {
 		try {
 			new FolderInserter(this.drive, resource, metadata).newFolder();
 		} catch (final IOException e) {
-			e.printStackTrace();
+			RecursiveUploader.LOGGER.log(Level.WARNING, e.getMessage(), e);
 		}
 	}
 
