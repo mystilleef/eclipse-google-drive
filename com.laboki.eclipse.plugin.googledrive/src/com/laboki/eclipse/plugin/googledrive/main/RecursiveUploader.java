@@ -46,20 +46,20 @@ public final class RecursiveUploader extends EventBusInstance {
 			@Override
 			protected void execute() {
 				final IResource resource = event.getResource();
-				if (RecursiveUploader.this.resources.contains(resource)) this.prepareToUploadNextFile(event, resource);
+				if (RecursiveUploader.this.resources.contains(resource)) this.prepareToUploadNextFile(resource);
 			}
 
-			private void prepareToUploadNextFile(final UploadedFileEvent event, final IResource resource) {
-				this.updateLocalCache(event, resource);
-				this.removeUploadedFile(event);
+			private void prepareToUploadNextFile(final IResource resource) {
+				this.updateLocalCache(resource);
+				this.removeUploadedFile();
 				RecursiveUploader.this.upload();
 			}
 
-			private void updateLocalCache(final UploadedFileEvent event, final IResource resource) {
+			private void updateLocalCache(final IResource resource) {
 				RecursiveUploader.this.uploadedResourcesCache.forcePut(event.getDriveId(), resource);
 			}
 
-			private boolean removeUploadedFile(final UploadedFileEvent event) {
+			private boolean removeUploadedFile() {
 				return RecursiveUploader.this.resources.remove(event.getResource());
 			}
 		}.begin();
@@ -107,10 +107,14 @@ public final class RecursiveUploader extends EventBusInstance {
 
 	private void insertFolderInDrive(final File metadata, final IResource resource) {
 		try {
-			new FolderInserter(this.drive, resource, metadata).newFolder();
+			this.insertNewFolder(metadata, resource);
 		} catch (final IOException e) {
 			RecursiveUploader.LOGGER.log(Level.WARNING, e.getMessage(), e);
 		}
+	}
+
+	private void insertNewFolder(final File metadata, final IResource resource) throws IOException {
+		new FolderInserter(this.drive, resource, metadata).newFolder();
 	}
 
 	private File newMetadata(final IResource resource) {
