@@ -33,8 +33,16 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 
 			@Override
 			protected void execute() {
-				DriveIdMapUpdater.this.driveIdMap.forcePut(event.getDriveId(), event.getResource().getFullPath().toString());
+				DriveIdMapUpdater.this.driveIdMap.forcePut(this.driveId(), this.fullPath());
 				DriveIdMapUpdater.this.emitDriveIdMapEvent();
+			}
+
+			private String driveId() {
+				return event.getDriveId();
+			}
+
+			private String fullPath() {
+				return event.getResource().getFullPath().toString();
 			}
 		}.begin();
 	}
@@ -99,7 +107,11 @@ public final class DriveIdMapUpdater extends EventBusInstance {
 
 			@Override
 			protected void execute() {
-				EventBus.post(new DriveIdMapEvent(ImmutableBiMap.copyOf(DriveIdMapUpdater.this.driveIdMap)));
+				EventBus.post(new DriveIdMapEvent(this.immutableDriveIdMap()));
+			}
+
+			private ImmutableBiMap<String, String> immutableDriveIdMap() {
+				return ImmutableBiMap.copyOf(DriveIdMapUpdater.this.driveIdMap);
 			}
 		}.begin();
 	}
