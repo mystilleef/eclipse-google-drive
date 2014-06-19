@@ -63,12 +63,15 @@ public final class ProjectUploader extends EventBusInstance {
 			}
 
 			private void upload(final List<String> names) {
-				final List<IResource> resources = new FolderScanner().scanProjects(names);
-				ProjectUploader.this.startService(this.newUpdaterService(resources));
+				ProjectUploader.this.startService(this.newUpdaterService(this.scanProjects(names)));
 			}
 
 			private RecursiveUploader newUpdaterService(final List<IResource> resources) {
 				return new RecursiveUploader(ProjectUploader.this, EventBus.INSTANCE, ProjectUploader.this.drive, ProjectUploader.this.id, resources);
+			}
+
+			private List<IResource> scanProjects(final List<String> names) {
+				return new FolderScanner().scanProjects(names);
 			}
 		}.begin();
 	}
